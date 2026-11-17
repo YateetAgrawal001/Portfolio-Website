@@ -28,7 +28,6 @@ export default function App() {
       <Suspense fallback={null}><Game data={data} /></Suspense>
       <Intro />
       <Lights />
-      <Toast />
       <DetailPage data={data} />
     </>
   );
@@ -74,7 +73,3 @@ function Lights() {
   return <div className="lights" hidden={n < 0} aria-hidden="true">{[0, 1, 2, 3, 4].map(i => <i key={i} className={i < n ? 'on' : undefined} />)}</div>;
 }
 
-function Toast() {
-  const msg = useUi(s => s.toast), on = useUi(s => s.toastOn);
-  return <div className={'toast' + (on ? ' show' : '')} role="status">{msg}</div>;
-}

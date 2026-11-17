@@ -31,8 +31,6 @@ export interface Ui {
   visited: number[];
   bannerHidden: boolean;
   lights: number;        // start lights lit, -1 when the gantry is hidden
-  toast: string;
-  toastOn: boolean;
   listOpen: boolean;
   listNote: string;
   listSec: number;       // section to open the list at, -1 for the top
@@ -41,7 +39,7 @@ export interface Ui {
 
 let state: Ui = {
   phase: 'intro', ready: false, noGame: false, night: true, rain: false, rival: true, cam: 0,
-  shown: -1, visited: [], bannerHidden: false, lights: -1, toast: '', toastOn: false,
+  shown: -1, visited: [], bannerHidden: false, lights: -1,
   listOpen: false, listNote: '', listSec: -1, hud: HUD0,
 };
 const subs = new Set<() => void>();
@@ -51,14 +49,6 @@ export const get = () => state;
 export function set(patch: Partial<Ui>) { state = { ...state, ...patch }; subs.forEach(f => f()); }
 /** Subscribe to one field. The selector must return a primitive or a reference that only changes when the data does. */
 export const useUi = <T,>(sel: (s: Ui) => T): T => useSyncExternalStore(subscribe, () => sel(state));
-
-let toastTimer = 0;
-export function toast(msg: string, sticky = false) {
-  set({ toast: msg, toastOn: true });
-  clearTimeout(toastTimer);
-  if (!sticky) toastTimer = window.setTimeout(() => set({ toastOn: false }), 2800);
-}
-export function hideToast() { clearTimeout(toastTimer); set({ toastOn: false }); }
 
 export const openList = (note = '', sec = -1) => set({ listOpen: true, listNote: note, listSec: sec });
 export const closeList = () => set({ listOpen: false });

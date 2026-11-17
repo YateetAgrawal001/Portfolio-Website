@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { get, hideToast, HUD0, reduceMotion, set, toast, type Control, type GameHandle, type Portfolio } from './store';
+import { get, HUD0, reduceMotion, set, type Control, type GameHandle, type Portfolio } from './store';
 
 // The 3D side, ported from the single-file prototype (portfolio-grand-prix.html) with the numbers from PLAN.md section 6.
 // Units: 1 world unit = 1 metre, displayed km/h = speed * 3.6. Car-local axes: forward +x, up +y, right +z.
@@ -604,8 +604,8 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
   let state: 'intro' | 'countdown' | 'race' = 'intro';
   const setPhase = (p: typeof state) => { state = p; set({ phase: p }); };
   let camMode: 0 | 1 = 0; // 0 cockpit, 1 chase
-  let s = 22, v = 0, lat = 0, latT = 0, yawOff = 0, wheelAng = 0, thrS = 0, brkS = 0, prevS = s, snapCam = true, introAngle = 0, goHint = false, frameNo = 0, flashT = 0, domeT = 0;
-  let lapNo = 0, lapRunning = false, lapT = 0, bestLap = 0, pCross = 0, uiT = 0, contactT = 0, scrubT = 0, rivalOn = true, cdTimer = 0, blurOn = false, blurLast = -1, driveTxt = 'Idle';
+  let s = 22, v = 0, lat = 0, latT = 0, yawOff = 0, wheelAng = 0, thrS = 0, brkS = 0, prevS = s, snapCam = true, introAngle = 0, frameNo = 0, flashT = 0, domeT = 0;
+  let lapNo = 0, lapRunning = false, lapT = 0, bestLap = 0, pCross = 0, uiT = 0, rivalOn = true, cdTimer = 0, blurOn = false, blurLast = -1, driveTxt = 'Idle';
   const carPos = new THREE.Vector3(), camLook = new THREE.Vector3(), tmp = new THREE.Vector3(), eye = new THREE.Vector3(), look = new THREE.Vector3();
   const lightOff = new THREE.Vector3(50, 95, 30);
   const rival = { s: 44, v: 0, lat: -3.6, laps: 0 };
@@ -622,9 +622,8 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
 
   function crossLine() {
     pCross++;
-    if (!lapRunning) { lapRunning = true; lapNo = 1; lapT = 0; toast('Lap 1 started'); return; }
-    const best = !bestLap || lapT < bestLap; if (best) bestLap = lapT;
-    toast('Lap ' + lapNo + ' done: ' + fmt(lapT) + (best ? ' (best)' : ''));
+    if (!lapRunning) { lapRunning = true; lapNo = 1; lapT = 0; return; }
+    if (!bestLap || lapT < bestLap) bestLap = lapT;
     lapNo++; lapT = 0;
   }
   /** Highest curvature over the next samples, looking `span` samples ahead. */
@@ -636,12 +635,10 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
   const cornerLimit = () => Math.max(42, Math.min(95, Math.sqrt(30 / Math.max(curvAhead(s, 14, 2), 1e-4)))) * (rainOn ? .88 : 1);
   function syncRival() { rival.s = wrapS(s + 40); rival.laps = pCross + (rival.s < s ? 1 : 0); rival.lat = -3.6; }
   function collide(dt: number) {
-    contactT = Math.max(0, contactT - dt);
     if (!rivalOn || state !== 'race' || Math.abs(rival.lat - lat) > 2.3) return;
     const d = gapNow();
     if (d > 0 && d < 4.6 && v > rival.v) {
       v += (rival.v * .96 - v) * Math.min(1, dt * 12);
-      if (contactT <= 0) { toast('Contact. Steer around the rival.'); contactT = 3; }
     } else if (d < 0 && d > -4.6 && rival.v > v) {
       rival.v += (v * 1.02 - rival.v) * Math.min(1, dt * 8);
     }
@@ -708,8 +705,7 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
   /** Back to the grid with a fresh roll of the conditions: night 70% of the time, never persisted. */
   function restart() {
     clearInterval(cdTimer);
-    hideToast();
-    s = 22; v = 0; lat = latT = 0; yawOff = 0; prevS = s; snapCam = true; introAngle = 0; goHint = false;
+    s = 22; v = 0; lat = latT = 0; yawOff = 0; prevS = s; snapCam = true; introAngle = 0;
     lapNo = 0; lapRunning = false; lapT = 0; bestLap = 0; pCross = 0;
     setPhase('intro');
     set({ lights: -1, visited: [], shown: -1, bannerHidden: false, hud: HUD0 });
@@ -720,7 +716,6 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
     if (state === 'intro') return;
     clearInterval(cdTimer); setPhase('race'); set({ lights: -1 });
     s = wrapS(ST[i].s - 45); prevS = s; v = 0; lat = latT = 0; snapCam = true; lapRunning = false; syncRival(); resetCard();
-    toast('Parked at T' + ST[i].turn + '. Hold gas to drive.');
   }
   function start() {
     if (state !== 'intro') return;
@@ -728,8 +723,8 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
     let n = 0; set({ lights: 0 });
     cdTimer = window.setInterval(() => {
       if (n < 5) { set({ lights: ++n }); return; }
-      clearInterval(cdTimer); set({ lights: 0 }); setPhase('race'); goHint = true;
-      setTimeout(() => { set({ lights: -1 }); if (goHint) toast(matchMedia('(pointer:coarse)').matches ? 'Lights out. Hold Gas to drive.' : 'Lights out. Hold W or ↑ to drive.', true); }, 650);
+      clearInterval(cdTimer); set({ lights: 0 }); setPhase('race');
+      setTimeout(() => set({ lights: -1 }), 650);
     }, 450);
   }
 
@@ -744,9 +739,7 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
       v = Math.max(0, v + acc * dt);
       if (!gas && v < .35) v = 0;
       const cl = cornerLimit(); let scrub = false;
-      if (v > cl) { v -= (v - cl) * Math.min(1, dt * 1.6); scrub = true; if (scrubT <= 0) { toast('Too fast for the corner. Lift off earlier.'); scrubT = 8; } }
-      scrubT = Math.max(0, scrubT - dt);
-      if (goHint && v > 1) { goHint = false; hideToast(); }
+      if (v > cl) { v -= (v - cl) * Math.min(1, dt * 1.6); scrub = true; }
       collide(dt);
       prevS = s; s = wrapS(s + v * dt);
       if (lapRunning) lapT += dt;
@@ -755,10 +748,7 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
       let best = -1, bd = R_TRIGGER;
       ST.forEach((st, i) => { const d = Math.abs(circ(s - st.s)); if (d < bd) { bd = d; best = i; } });
       const u = get();
-      if (best >= 0 && best !== u.shown) {
-        showCard(best);
-        if (u.visited.length < ST.length && get().visited.length === ST.length) toast('All seven turns visited.');
-      }
+      if (best >= 0 && best !== u.shown) showCard(best);
       driveTxt = brake ? 'Brake' : scrub ? 'Understeer' : gas ? 'Gas' : (v > 0 ? 'Coasting' : 'Stopped');
     } else { v = 0; }
     updateRival(dt);
