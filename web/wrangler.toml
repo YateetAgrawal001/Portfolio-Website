@@ -1,6 +1,6 @@
 # Cloudflare Pages config. With this file in the project's root directory (web/), Pages reads bindings from here
 # and the D1 bindings in the dashboard become read-only. Functions are in web/functions, served under /api.
-name = "portfolio-website"            # must match the Pages project name
+name = "yateetagrawal-portfolio"            # must match the Pages project name
 pages_build_output_dir = "./dist"
 compatibility_date = "2026-04-01"
 
