@@ -1,0 +1,10 @@
+node_modules/
+dist/
+bin/
+obj/
+api/data/
+api/wwwroot/
+.env
+
+# resume has a phone number; keep it out of a public repo
+*.pdf

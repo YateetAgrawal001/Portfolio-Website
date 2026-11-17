@@ -1,0 +1,14 @@
+services:
+  portfolio:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      # Set this (in a .env file next to this one) to read contact messages via GET /api/contact. Unset = endpoint off.
+      ADMIN_KEY: ${ADMIN_KEY:-}
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+volumes:
+  data:

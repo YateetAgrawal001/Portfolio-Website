@@ -1,0 +1,108 @@
+{
+  "name": "Yateet Agrawal",
+  "role": "Full-stack engineer",
+  "heroSub": "I’m Yateet Agrawal, a backend-focused full-stack engineer. React and TypeScript on the front, C# and .NET behind it. Here is every turn of the race, laid out to read.",
+  "stations": [
+    {
+      "turn": 1,
+      "short": "About",
+      "title": "About me",
+      "sub": "Who’s driving",
+      "body": "I’m Yateet Agrawal, a backend-focused full-stack engineer in Noida, India. I build enterprise applications with C#/.NET, React and TypeScript, SQL and REST APIs, and more recently agentic AI and MCP servers.",
+      "chips": ["C#/.NET", "React", "TypeScript", "SQL", "Agentic AI", "400+ LeetCode problems", "Azure AI Engineer Associate"]
+    },
+    {
+      "turn": 2,
+      "short": "Experience",
+      "title": "Experience",
+      "sub": "The race so far",
+      "body": "Where I’ve worked and studied, most recent first.",
+      "roles": [
+        {
+          "role": "Software Engineer 1",
+          "company": "MAQ Software",
+          "years": "Jul 2025 – Present",
+          "text": "Delivered a full-stack SOW Management Portal (10+ React pages, 20+ .NET APIs, SQL stored procedures, RBAC, Playwright tests) and architected an MCP server for ServiceNow agentic AI."
+        },
+        {
+          "role": "Associate Software Engineer",
+          "company": "MAQ Software",
+          "years": "Jan 2025 – Jun 2025",
+          "text": "Built the Field Forecast Tool and enhanced Predictive Staffing on the PepsiCo UGM Dashboard, and shipped two production Power BI dashboards on Microsoft sales metrics."
+        },
+        {
+          "role": "B.Tech, Computer Science & Engineering",
+          "company": "Amity University, Noida",
+          "years": "2021 – 2025",
+          "text": "CGPA 8.3. Published a paper on decentralized identity management using blockchain at ICDAM 2025, a Scopus-indexed conference."
+        }
+      ]
+    },
+    {
+      "turn": 3,
+      "short": "Frontend",
+      "title": "Frontend",
+      "sub": "The cockpit: everything the driver touches",
+      "body": "I build React and TypeScript interfaces for enterprise apps: 10+ production pages on the SOW Management Portal, several UI redesigns, and automated Playwright test suites.",
+      "chips": ["React", "TypeScript", "JavaScript", "Redux", "Tailwind CSS", "Playwright", "Power BI"]
+    },
+    {
+      "turn": 4,
+      "short": "Backend",
+      "title": "Backend",
+      "sub": "The engine: the power behind the interface",
+      "body": "I design REST APIs in C# and .NET, write SQL stored procedures, and build role-based access control. Most recently: an MCP server in Python with Entra ID auth, Kong gateway routing and natural-language-to-DAX translation.",
+      "chips": ["C#", ".NET Core", "REST APIs", "SQL Server", "Python", "MCP servers", "Node.js/Express", "PostgreSQL", "MongoDB", "Docker", "Azure", "Kong Gateway"]
+    },
+    {
+      "turn": 5,
+      "short": "Projects",
+      "title": "Projects",
+      "sub": "Race wins",
+      "body": "One from work and two of my own.",
+      "projects": [
+        {
+          "name": "Agentic AI MCP Server",
+          "text": "An MCP server that lets ServiceNow agentic AI create Power BI reports on its own: Entra ID auth, Kong gateway routing, NLQ-to-DAX translation and a visual generation pipeline. Built at MAQ Software.",
+          "stack": ["Python", "FastMCP", "Fabric Skills", "Kong"]
+        },
+        {
+          "name": "Offline Document Sharing Tool",
+          "text": "Cross-platform P2P file transfer over WiFi using QR codes. Supports iOS↔Windows and Android↔Mac transfers, with an adaptive UI and real-time status tracking. In active development.",
+          "stack": ["Python"]
+        },
+        {
+          "name": "Blockchain-Based Web App",
+          "text": "A decentralized identity management system for banking KYC, using Ethereum smart contracts, IPFS storage and role-based access control.",
+          "stack": ["Solidity", "React", "IPFS", "Web3.js"]
+        }
+      ],
+      "links": [{ "label": "See more on GitHub", "href": "https://github.com/YateetAgrawal001" }]
+    },
+    {
+      "turn": 6,
+      "short": "Process",
+      "title": "How I work",
+      "sub": "The pit wall: plan, build, ship",
+      "body": "Small steps, checked often.",
+      "steps": [
+        { "title": "Plan", "text": "agree the goal and what “done” means." },
+        { "title": "Prototype", "text": "test the riskiest idea first." },
+        { "title": "Build", "text": "ship small, tested pieces." },
+        { "title": "Ship and learn", "text": "deploy often, measure, adjust." }
+      ]
+    },
+    {
+      "turn": 7,
+      "short": "Contact",
+      "title": "Contact",
+      "sub": "The finish line",
+      "body": "Let’s build something that works end to end.",
+      "links": [
+        { "label": "yateetagrawal9999@gmail.com", "href": "mailto:yateetagrawal9999@gmail.com" },
+        { "label": "GitHub", "href": "https://github.com/YateetAgrawal001" },
+        { "label": "LinkedIn", "href": "https://www.linkedin.com/in/yateet-agrawal-477400260" }
+      ]
+    }
+  ]
+}
