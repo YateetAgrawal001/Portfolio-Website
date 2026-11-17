@@ -1,0 +1,22 @@
+# Cloudflare Pages config. With this file in the project's root directory (web/), Pages reads bindings from here
+# and the D1 bindings in the dashboard become read-only. Functions are in web/functions, served under /api.
+name = "portfolio-website"            # must match the Pages project name
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-04-01"
+
+# Production. Replace database_id with the ID from `npx wrangler d1 create portfolio` (it is not a secret).
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio"
+database_id = "78343f35-1289-4055-aff2-a6ba5616b299"
+migrations_dir = "migrations"
+
+# Preview deployments (every branch except production) use their own database, so testing never touches real messages.
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "portfolio-preview"
+database_id = "720ef3d4-05ac-44e1-8f6b-84be5b1b6cf1"
+migrations_dir = "migrations"
+
+# ADMIN_KEY is a secret: set it in the dashboard (Settings > Variables and Secrets) for Production and Preview,
+# and in web/.dev.vars for local development. Never put it in this file.
