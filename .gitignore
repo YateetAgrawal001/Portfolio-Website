@@ -8,3 +8,10 @@ api/wwwroot/
 
 # resume has a phone number; keep it out of a public repo
 *.pdf
+
+# Cloudflare local state (local D1 database) and local secrets
+.wrangler/
+.dev.vars*
+
+# D1 exports (contact messages, personal data)
+*.backup.sql
