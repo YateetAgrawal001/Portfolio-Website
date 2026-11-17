@@ -121,13 +121,13 @@ Preview deployments never see production messages.
    npx wrangler d1 migrations apply DB --remote               # production
    npx wrangler d1 migrations apply DB --remote --env preview # preview
    ```
-3. Set the admin key as a secret, for both Production and Preview. In the dashboard, open your Pages project, then **Settings → Variables and Secrets → Add**, type **Secret**, name `ADMIN_KEY`. For production only, the CLI also works: `npx wrangler pages secret put ADMIN_KEY --project-name portfolio-website`. Use a long random string. It never goes in the repo or the frontend.
+3. Set the admin key as a secret, for both Production and Preview. In the dashboard, open your Pages project, then **Settings → Variables and Secrets → Add**, type **Secret**, name `ADMIN_KEY`. For production only, the CLI also works: `npx wrangler pages secret put ADMIN_KEY --project-name yateet-racing-portfolio`. Use a long random string. It never goes in the repo or the frontend.
 4. Push. Pages builds and deploys as before, now with the functions and the D1 binding `DB` from `wrangler.toml`.
 
 Read your messages:
 
 ```
-curl -H "X-Admin-Key: <your key>" https://<your-project>.pages.dev/api/contact
+curl -H "X-Admin-Key: <your key>" https://yateet-racing-portfolio.pages.dev/api/contact
 ```
 
 ### Changing the database
