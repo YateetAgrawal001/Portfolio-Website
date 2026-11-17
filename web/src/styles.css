@@ -26,30 +26,36 @@ button:disabled{opacity:.6;cursor:default}
 .boot{margin:0;height:100%;display:grid;place-items:center;color:var(--muted)}
 #gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
 
-/* Layering: canvas 0, blur and vignette 2, HUD 3 (banner 11 inside it), start lights 15, toast 16, intro 20, list 30. */
-.hud{position:fixed;inset:0;z-index:3;display:grid;grid-template-rows:auto 1fr auto;gap:12px;pointer-events:none;
-  padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom,0px))}
+/* Layering: canvas 0, blur and vignette 2, HUD 3 (banner 11 inside it), start lights 15, toast 16, intro 20, list 30.
+   The HUD is a three-row grid: top bar, banner (the space left between the bars), bottom bar. So the banner can never cover the bars. */
+.hud{position:fixed;inset:0;z-index:3;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;pointer-events:none;
+  padding:calc(14px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px))}
 .hud.cockpit .speedo{display:none}
 .panel{pointer-events:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow)}
-.top{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start}
-.brand{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px}
-.badge{display:grid;place-items:center;width:40px;height:40px;background:var(--accent);color:var(--on-accent);border-radius:4px;
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;min-width:0}
+.brand > div{min-width:0}
+.badge{flex:none;display:grid;place-items:center;width:40px;height:40px;background:var(--accent);color:var(--on-accent);border-radius:4px;
   font:700 20px/1 'Barlow Condensed',sans-serif;letter-spacing:.02em}
 .brand strong{display:block;font:700 21px/1.05 'Barlow Condensed',sans-serif}
 .brand span.role{display:block;font-size:14px;color:var(--muted)}
-.turns{display:flex;align-items:center;gap:4px;padding:2px 8px 2px 14px}
+.turns{display:flex;align-items:center;gap:4px;padding:2px 8px 2px 14px;margin-left:auto}
 .turns .progress{font-size:15px;color:var(--muted);margin-right:6px;white-space:nowrap}
+.pills{display:flex}
+.top-actions{display:flex;gap:10px}
+.opts-toggle{display:none;width:44px;padding:0;place-items:center}
+.opts-toggle[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
 .pill{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;padding:0}
 .pill span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);
   font:700 14px/1 'Barlow Condensed',sans-serif;background:var(--solid)}
 .pill.done span{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .pill.now span{box-shadow:0 0 0 3px var(--solid),0 0 0 5px var(--accent)}
-.skip{min-height:44px;padding:0 14px;margin-left:6px;border:1px solid var(--line);border-radius:4px;background:var(--solid);font-weight:600;font-size:15px}
-.skip:hover{border-color:var(--ink)}
+.skip{white-space:nowrap}
 
-/* Turn banner */
-.tb{position:fixed;z-index:11;left:14px;right:14px;top:calc(78px + env(safe-area-inset-top,0px));padding:14px 56px 14px 18px;border-top:4px solid var(--accent);
-  transform:translateY(calc(-100% - 90px));opacity:0;visibility:hidden;
+/* Turn banner: fills the middle row of the HUD from the top, scrolls inside itself if the screen is short */
+.tb{position:relative;z-index:11;grid-row:2;align-self:start;justify-self:center;box-sizing:border-box;width:100%;max-width:1480px;max-height:100%;
+  overflow:auto;overscroll-behavior:contain;padding:14px 56px 14px 18px;border-top:4px solid var(--accent);
+  transform:translateY(-40px);opacity:0;visibility:hidden;
   transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s ease,visibility 0s linear .45s}
 .tb.show{transform:none;opacity:1;visibility:visible;transition-delay:0s}
 .tb .x{top:8px;right:6px}
@@ -79,14 +85,15 @@ button:disabled{opacity:.6;cursor:default}
 .chips li{background:var(--chip);border-radius:4px;padding:5px 10px;font-weight:500;font-size:14px}
 .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:4px;border:1px solid var(--ink);
+  box-sizing:border-box;max-width:100%;text-align:center;overflow-wrap:anywhere;
   color:var(--ink);text-decoration:none;font-weight:600;font-size:15px;background:var(--solid)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .x{position:absolute;top:10px;right:10px;width:44px;height:44px;border:0;background:none;border-radius:4px;display:grid;place-items:center}
 .x:hover{background:var(--chip)}
 
 /* Bottom row: race box, speedo, buttons, touch controls, minimap */
-.bottom{grid-row:3;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
-.left-stack{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.bottom{grid-row:3;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:end;gap:10px}
+.readouts,.opts{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .racebox{display:flex;align-items:flex-end;gap:18px;padding:8px 16px}
 .racebox div{display:grid;gap:3px}
 .racebox span{font-size:12px;color:var(--muted);line-height:1}
@@ -103,11 +110,11 @@ button:disabled{opacity:.6;cursor:default}
 kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;background:var(--solid);color:var(--ink);font:600 13px/1.4 'Barlow',sans-serif;text-align:center}
 .touch{display:none;gap:10px;pointer-events:auto}
 .tbtn{width:64px;height:64px;border-radius:50%;border:2px solid var(--ink);background:var(--panel);display:grid;place-items:center;touch-action:none;
-  font:700 15px/1 'Barlow Condensed',sans-serif;box-shadow:var(--shadow);user-select:none;-webkit-user-select:none}
+  font:700 15px/1 'Barlow Condensed',sans-serif;box-shadow:var(--shadow);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .tbtn.gas{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .tbtn:active{transform:scale(.94)}
-@media (hover:none) and (pointer:coarse){.touch{display:flex}.hint{display:none}}
-#map{display:block;width:176px;height:176px;border-radius:6px;cursor:pointer}
+#map{display:block;width:176px;height:176px;border-radius:6px;cursor:pointer;grid-column:-2;justify-self:end}
+.hint{justify-self:start}
 
 /* Cockpit view: edges blur more with speed, plus a soft vignette */
 .blur{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .4s;--bl:3px;
@@ -117,8 +124,12 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
   background:radial-gradient(ellipse 80% 75% at 50% 56%,transparent 55%,rgba(0,0,0,.42) 100%)}
 
 /* Intro, start lights, toast */
-.intro{position:fixed;inset:0;display:grid;align-items:center;justify-items:start;padding:calc(20px + env(safe-area-inset-top,0px)) 5vw calc(20px + env(safe-area-inset-bottom,0px));z-index:20;pointer-events:none}
-.intro-card{pointer-events:auto;max-width:560px;padding:30px 32px 26px;border-top:4px solid var(--accent)}
+/* Flex column + auto margins: centred when it fits, scrollable from the top when the screen is shorter than the card. */
+.intro{position:fixed;inset:0;display:flex;flex-direction:column;align-items:flex-start;overflow-y:auto;overscroll-behavior:contain;z-index:20;pointer-events:none;
+  padding:calc(20px + env(safe-area-inset-top,0px)) max(5vw,calc(14px + env(safe-area-inset-right,0px))) calc(20px + env(safe-area-inset-bottom,0px)) max(5vw,calc(14px + env(safe-area-inset-left,0px)))}
+.intro-card{pointer-events:auto;box-sizing:border-box;max-width:min(560px,100%);margin-block:auto;padding:30px 32px 26px;border-top:4px solid var(--accent)}
+.keys-touch{display:none;margin:0;font-size:15px;color:var(--muted)}
+.keys-touch b{color:var(--ink)}
 .intro h1{margin:0 0 12px;font:700 clamp(48px,8vw,88px)/.92 'Barlow Condensed',sans-serif;letter-spacing:-.01em}
 .intro p{margin:0 0 18px;font-size:17px;max-width:46ch}
 .intro .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
@@ -130,7 +141,7 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
 .lights{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;gap:10px;padding:12px 16px;background:#0A0810;border:1px solid #2A2440;border-radius:10px;z-index:15}
 .lights i{width:30px;height:30px;border-radius:50%;background:#3A1218;display:block}
 .lights i.on{background:#FF2A44;box-shadow:0 0 14px #FF2A44}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);padding:10px 18px;border-radius:6px;background:var(--ink);color:var(--solid);
+.toast{position:fixed;left:50%;top:46%;transform:translate(-50%,8px);padding:10px 18px;border-radius:6px;background:var(--ink);color:var(--solid);
   font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:16;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -144,7 +155,8 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
 @keyframes drift1{to{transform:translate(12vmax,8vmax) scale(1.15)}}
 @keyframes drift2{to{transform:translate(-10vmax,-6vmax) scale(1.1)}}
 .pg-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:calc(10px + env(safe-area-inset-top,0px)) 24px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
+  padding:calc(10px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-right,0px)) 10px calc(24px + env(safe-area-inset-left,0px));background:var(--panel);border-bottom:1px solid var(--line)}
+.pg-top .btn{white-space:nowrap}
 .pg-brand{display:flex;align-items:center;gap:10px}
 .pg-brand strong{font:700 22px/1 'Barlow Condensed',sans-serif}
 .pg-nav{display:flex;gap:2px;flex-wrap:wrap;justify-content:center}
@@ -153,9 +165,9 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
 .pg-nav button:hover{color:var(--ink)}
 .pg-nav button.on{color:var(--ink);background:var(--chip)}
 .pg-prog{position:absolute;left:0;bottom:-1px;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(var(--pp,0));background:linear-gradient(90deg,var(--accent),var(--cy))}
-.pg{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 24px calc(60px + env(safe-area-inset-bottom,0px))}
+.pg{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 calc(24px + env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) calc(24px + env(safe-area-inset-left,0px))}
 
-.hero{min-height:72vh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:26px;padding:56px 0 36px}
+.hero{min-height:72vh;min-height:72svh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:26px;padding:56px 0 36px}
 .hero-h1{margin:0;font:700 clamp(56px,10.5vw,152px)/.88 'Barlow Condensed',sans-serif;letter-spacing:-.02em}
 .hero-h1 .ln{display:block}
 .hero-h1 .ln2{color:transparent;-webkit-text-stroke:2px var(--cy)}
@@ -196,7 +208,7 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
 .tags{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
 .tags li span{display:block;padding:10px 18px;border:1px solid var(--line);border-radius:999px;background:var(--panel);font-weight:500;transition:transform .25s,border-color .25s}
 .tags li:hover span{transform:translateY(-3px);border-color:var(--accent)}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-bottom:8px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:20px;margin-bottom:8px}
 .pcard{position:relative;height:100%;box-sizing:border-box;overflow:hidden;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:flex;flex-direction:column;gap:12px;transition:transform .3s,border-color .3s}
 .pcard:hover{transform:translateY(-6px);border-color:var(--accent)}
 .pcard::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%),rgba(255,77,141,.2),transparent 60%)}
@@ -207,7 +219,7 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
 .plink{margin-top:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:600;color:var(--ink);text-decoration:none}
 .plink svg{transition:transform .25s}
 .plink:hover svg{transform:translateX(5px)}
-.psteps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.psteps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:20px}
 .psteps li{padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 .psteps .n{font:700 72px/1 'Barlow Condensed',sans-serif;color:transparent;-webkit-text-stroke:1.5px var(--accent)}
 .psteps h3{margin:6px 0;font:700 28px/1 'Barlow Condensed',sans-serif}
@@ -229,35 +241,199 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--l
 .cform .hp{position:absolute;left:-9999px}
 .pg-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:14px}
 
+/* ---------- Responsive ----------
+   Width breakpoints: 1800+ big screens, 1100 laptops, 960 tablets landscape and small laptops, 820 tablets portrait and
+   unfolded foldables, 560 phones, 374 small phones and folded foldables. Height: 500 and below is a phone in landscape.
+   Touch (hover:none, pointer:coarse) switches to on-screen controls whatever the size. */
+
+@media (min-width:1800px){
+  .tb .lead{font-size:17px}
+  .tcols li{font-size:15px}
+  #map{width:210px;height:210px}
+  .pg{max-width:1280px}
+}
+@media (max-width:1500px){
+  .hint{display:none}
+}
+@media (max-width:1100px){
+  .turns .progress{display:none}
+}
 @media (max-width:960px){
-  .pg-nav{display:none}
-  .tb-body{grid-template-columns:minmax(180px,230px) minmax(0,1fr)}
+  .tb-body{grid-template-columns:minmax(170px,220px) minmax(0,1fr)}
   .tb-next{display:none}
+  /* list view: the section nav becomes a second header row that scrolls sideways */
+  .pg-top{flex-wrap:wrap;row-gap:2px;padding-bottom:4px}
+  .pg-nav{order:3;flex:1 0 100%;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;margin:0 -8px;padding:0 8px}
+  .pg-nav::-webkit-scrollbar{display:none}
+  .pg-nav button{flex:none;white-space:nowrap}
+  .sec{scroll-margin-top:118px}
 }
 @media (max-width:820px){
-  .tb{left:10px;right:10px;top:calc(132px + env(safe-area-inset-top,0px));max-height:32vh;overflow:auto;padding:10px 48px 10px 14px}
-  .tb-body{grid-template-columns:1fr}
+  .tb{padding:12px 48px 12px 14px}
+  .tb-body{grid-template-columns:1fr;gap:8px}
   .tb h2{font-size:30px}
   .tcols.c3,.tcols.c4{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Race options fold behind one button on touch screens and narrow windows */
+@media (pointer:coarse),(max-width:720px){
+  .opts-toggle{display:grid}
+  .opts{display:none}
+  .opts.open{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;grid-column:1/-1;grid-row:1}
+  .opts.open .cam{padding:0 6px;font-size:14px}
+  .lights{top:28%}
+}
+
+/* Touch: steering under the left thumb, pedals under the right, the centre left clear for the cockpit dash */
+@media (hover:none) and (pointer:coarse){
+  .touch{display:flex}
+  .hint,.keys{display:none}
+  .keys-touch{display:block}
+  .bottom{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:10px;
+    grid-template-areas:"opts opts opts" "read read map" "steer . pedals"}
+  .opts{grid-area:opts}
+  .readouts{grid-area:read;justify-self:start}
+  .steer{grid-area:steer}
+  .pedals{grid-area:pedals}
+  #map{grid-area:map;justify-self:end;margin:0;width:132px;height:132px}
+}
+
 @media (max-width:720px){
-  .turns{padding-left:8px;flex-wrap:wrap}
-  .turns .progress{display:none}
-  .speed{font-size:48px}
-  #map{width:104px;height:104px}
-  .toast{bottom:calc(196px + env(safe-area-inset-bottom,0px))}
   .intro-card{padding:22px 20px}
   .keys{grid-template-columns:1fr}
-  .racebox{gap:10px;padding:6px 10px}
+  .speed{font-size:48px}
+  .racebox{gap:12px;padding:6px 12px}
   .racebox b{font-size:24px}
   .racebox .lapn b{font-size:32px}
-  .pg{padding:0 18px calc(48px + env(safe-area-inset-bottom,0px))}
-  .pg-top{padding-left:16px;padding-right:16px}
+  .speedo{padding:6px 12px;gap:10px}
+  #map{width:104px;height:104px}
+  .pg{padding:0 calc(18px + env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) calc(18px + env(safe-area-inset-left,0px))}
+  .pg-top{padding-left:calc(16px + env(safe-area-inset-left,0px));padding-right:calc(16px + env(safe-area-inset-right,0px))}
   .track{padding-left:44px}
   .rail{left:12px}
   .sec-dot{left:-41px}
-  .hero{min-height:64vh}
+  .hero{min-height:64vh;min-height:64svh}
   .xp li{grid-template-columns:1fr;gap:6px}
+}
+
+/* Phones in portrait: brand and buttons on one row, the seven turns spread across the next */
+@media (max-width:560px){
+  .hud{gap:10px;padding-left:calc(10px + env(safe-area-inset-left,0px));padding-right:calc(10px + env(safe-area-inset-right,0px))}
+  .top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .top-actions{grid-column:2;grid-row:1;gap:8px}
+  .turns{grid-column:1/-1;grid-row:2;margin:0;padding:2px 4px}
+  .pills{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));width:100%}
+  .pill{width:auto}
+  .opts.open{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Compact banner: at most ~40% of the screen and small type, so the road stays visible. The title row stays put
+     and the content under it scrolls vertically when there are several items. */
+  .tb{max-height:min(100%,40svh);display:flex;flex-direction:column;overflow:hidden;padding:8px 6px 0 10px;border-top-width:3px}
+  .tb .x{top:0;right:0}
+  .tb-body{display:flex;flex-direction:column;align-items:stretch;min-height:0;gap:6px}
+  .tb-id{gap:8px;padding-right:34px}
+  .tb .tbadge{font-size:16px;padding:2px 8px}
+  .tb h2{font-size:22px}
+  .tb .sub{display:none}
+  .tb-main{gap:6px;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 6px 10px 0;
+    scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+  .tb .lead{font-size:13.5px;line-height:1.35}
+  .tcols.c3,.tcols.c4{grid-template-columns:1fr;gap:6px}
+  .tcols li{font-size:12.5px;line-height:1.3;padding-top:5px}
+  .tcols li strong{font-size:13.5px}
+  .tcols li em{font-size:12px}
+  .tcols li b{font-size:15px}
+  .tb .chips{gap:5px}
+  .tb .chips li{font-size:12.5px;padding:3px 8px}
+  .tb .links{gap:8px}
+  .tb .links .btn{min-height:40px;padding:0 12px;font-size:14px}
+  /* Readouts on one row: lap panel and a smaller speedo side by side */
+  .readouts{flex-wrap:nowrap;gap:8px}
+  .racebox{gap:10px;padding:6px 10px}
+  .racebox b{font-size:22px}
+  .racebox .lapn b{font-size:28px}
+  .speedo{padding:6px 10px;gap:8px}
+  .speed{font-size:36px}
+  .speed-meta{font-size:12px}
+  .speed-meta b{font-size:17px}
+  .speed-meta span:last-child{display:none}
+  .tbtn{width:60px;height:60px}
+  .touch{gap:8px}
+  #map{width:96px;height:96px}
+  .intro h1{font-size:44px}
+  .intro p{font-size:16px}
+  .intro .btn{flex:1 1 auto}
+  .pg-brand strong{font-size:19px}
+  .pg-top .btn{padding:0 12px;font-size:14px}
+}
+/* Touch phones in portrait: readouts get the full width, the minimap sits low between steering and pedals
+   (below the cockpit dash) */
+@media (hover:none) and (pointer:coarse) and (max-width:560px){
+  .bottom{grid-template-areas:"opts opts opts" "read read read" "steer map pedals"}
+  #map{justify-self:center;width:88px;height:88px}
+}
+@media (max-width:374px){
+  .brand span.role{display:none}
+  .brand strong{font-size:18px;line-height:1}
+  .badge{width:36px;height:36px;font-size:18px}
+  .skip{padding:0 10px;font-size:14px}
+  .tbtn{width:54px;height:54px}
+  #map{width:64px;height:64px}
+  .readouts{gap:6px}
+  .racebox{gap:10px;padding:5px 8px}
+  .racebox .lapn b{font-size:24px}
+  .speed{font-size:34px}
+  .intro h1{font-size:38px}
+  .pg-brand strong{display:none}
+}
+
+/* Short laptop screens: the intro card fits without scrolling */
+@media (max-height:800px) and (min-height:501px) and (min-width:721px){
+  .intro-card{padding:22px 28px 20px}
+  .intro h1{font-size:clamp(44px,6vw,68px)}
+  .intro p{margin-bottom:14px}
+  .intro .row{margin-bottom:14px}
+  .keys{gap:6px 18px}
+}
+
+@media (max-width:340px){
+  #map{display:none}
+}
+
+/* Phones in landscape: every row as short as possible so the road and the banner get the height */
+@media (max-height:500px) and (orientation:landscape){
+  .hud{gap:8px;padding-top:calc(8px + env(safe-area-inset-top,0px));padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  .brand{padding:4px 10px 4px 4px}
+  .brand span.role{display:none}
+  .pill{height:40px}
+  .tb{padding:8px 44px 8px 12px}
+  .tb .sub{display:none}
+  .tb h2{font-size:26px}
+  .tb .lead{font-size:14.5px}
+  .tb-body{grid-template-columns:minmax(140px,180px) minmax(0,1fr)}
+  .tcols li{font-size:13px}
+  .racebox{gap:10px;padding:4px 10px}
+  .racebox b{font-size:22px}
+  .racebox .lapn b{font-size:26px}
+  .speedo{padding:4px 10px}
+  .speed{font-size:36px}
+  .tbtn{width:56px;height:56px}
+  #map{width:80px;height:80px}
+  .intro{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  .intro-card{padding:16px 22px;max-width:min(640px,100%)}
+  .intro h1{font-size:40px}
+  .intro p{margin-bottom:12px;font-size:15px}
+  .intro .row{margin-bottom:10px}
+  .lights{top:22%}
+  .hero{min-height:0;padding-top:32px}
+}
+@media (hover:none) and (pointer:coarse) and (max-height:500px) and (orientation:landscape){
+  .bottom{grid-template-columns:auto auto minmax(0,1fr) auto auto;grid-template-areas:"opts opts opts opts opts" "steer read . map pedals"}
+  .readouts{align-self:end}
+  #map{display:block;width:72px;height:72px}
+}
+@media (max-height:500px) and (orientation:landscape) and (max-width:720px){
+  .brand > div{display:none}
+  .brand{padding:4px}
 }
 @media (prefers-reduced-motion: reduce){
   .swap,.pg-bg i,.marq-in,.btn.pulse{animation:none}

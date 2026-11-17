@@ -729,7 +729,7 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
     cdTimer = window.setInterval(() => {
       if (n < 5) { set({ lights: ++n }); return; }
       clearInterval(cdTimer); set({ lights: 0 }); setPhase('race'); goHint = true;
-      setTimeout(() => { set({ lights: -1 }); if (goHint) toast('Lights out. Hold W or Gas to drive.', true); }, 650);
+      setTimeout(() => { set({ lights: -1 }); if (goHint) toast(matchMedia('(pointer:coarse)').matches ? 'Lights out. Hold Gas to drive.' : 'Lights out. Hold W or ↑ to drive.', true); }, 650);
     }, 450);
   }
 
@@ -812,6 +812,7 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
       camera.lookAt(camLook); fov = 64 + v * .12;
     }
     snapCam = false;
+    fov = fitFov(fov);
     if (Math.abs(camera.fov - fov) > .05) { camera.fov = fov; camera.updateProjectionMatrix(); }
     sky.position.copy(camera.position);
 
@@ -830,6 +831,14 @@ export function createGame(els: Els, data: Portfolio): GameHandle {
     stars.position.copy(camera.position); sunSpr.position.set(camera.position.x + 700, camera.position.y + 900, camera.position.z - 1300);
     flashT += dt; if (flashT > .14) { flashT = 0; shuffleFlashes(); }
     domeT += dt; if (domeT > .08) { domeT = 0; drawDome(now * .001); }
+  }
+
+  // The FOVs above are tuned for landscape. Three.js keeps the vertical FOV fixed, so on a tall phone screen the road
+  // would look zoomed in; widen it as the screen gets narrower (half-way to matching landscape, capped at 100°).
+  function fitFov(f: number) {
+    if (camera.aspect >= 1.2) return f;
+    const t = Math.tan(f * Math.PI / 360) * Math.sqrt(1.2 / camera.aspect);
+    return Math.min(100, Math.atan(t) * 360 / Math.PI);
   }
 
   function resize() {

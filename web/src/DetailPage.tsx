@@ -21,7 +21,9 @@ export default function DetailPage({ data }: { data: Portfolio }) {
     const el = list.current;
     if (!open || !el) return;
     const ac = new AbortController(), sig = { signal: ac.signal };
-    const secs = [...el.querySelectorAll('.sec')], nav = [...el.querySelectorAll('.pg-nav button')], track = el.querySelector('.track')!;
+    const secs = [...el.querySelectorAll('.sec')], navEl = el.querySelector<HTMLElement>('.pg-nav')!, nav = [...navEl.querySelectorAll<HTMLElement>('button')];
+    const track = el.querySelector('.track')!;
+    let shownSec = -2;
 
     const io = new IntersectionObserver(
       es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }),
@@ -36,6 +38,13 @@ export default function DetailPage({ data }: { data: Portfolio }) {
       let cur = -1;
       secs.forEach((s, i) => { if (s.getBoundingClientRect().top < mid) { s.classList.add('on'); cur = i; } });
       nav.forEach((b, i) => b.classList.toggle('on', i === cur));
+      // On narrow screens the nav scrolls sideways: keep the current section's button in view.
+      if (cur !== shownSec && cur >= 0 && navEl.scrollWidth > navEl.clientWidth)
+        navEl.scrollTo({
+          left: navEl.scrollLeft + nav[cur].getBoundingClientRect().left - navEl.getBoundingClientRect().left - (navEl.clientWidth - nav[cur].offsetWidth) / 2,
+          behavior: shownSec === -2 ? 'instant' : 'smooth',
+        });
+      shownSec = cur;
     };
     let raf = 0;
     el.addEventListener('scroll', () => { raf ||= requestAnimationFrame(() => { raf = 0; sync(); }); }, { passive: true, ...sig });

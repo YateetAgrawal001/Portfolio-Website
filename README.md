@@ -37,7 +37,7 @@ To run the Cloudflare version locally (the built site plus Pages Functions and a
 ```
 cd web
 npm run build
-echo ADMIN_KEY=local-dev-key > .dev.vars
+Set-Content .dev.vars "ADMIN_KEY=local-dev-key"   # PowerShell; in bash: echo ADMIN_KEY=local-dev-key > .dev.vars
 npm run cf:dev          # applies migrations to the local database, then starts wrangler pages dev
 ```
 
@@ -190,7 +190,9 @@ Any host that runs a container works (Azure App Service or Container Apps, Rende
 | `E` | Hide or show the turn banner |
 | `Esc` | Hide the banner, or close the list view |
 
-On a touch screen, four buttons replace the keys. The turn buttons and the minimap jump straight to a turn.
+On a touch screen, on-screen buttons replace the keys: steering under the left thumb, Brake and Gas under the right. View, Rain, Rival and Restart sit behind the options button (sliders icon) at the top on touch screens and narrow windows. The turn buttons and the minimap jump straight to a turn.
+
+The layout adapts from 320 px phones to 2560 px monitors, including phones in landscape and foldables folded or open. On tall screens the camera widens its field of view so more of the road stays visible.
 
 ## How the code is laid out
 

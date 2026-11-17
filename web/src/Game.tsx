@@ -1,4 +1,4 @@
-import { useEffect, useRef, type PointerEvent, type RefObject } from 'react';
+import { useEffect, useRef, useState, type PointerEvent, type RefObject } from 'react';
 import { createGame } from './engine';
 import { game, openList, set, useUi, type Control, type Portfolio, type Station } from './store';
 
@@ -41,6 +41,7 @@ export default function Game({ data }: { data: Portfolio }) {
 function Hud({ data, map }: { data: Portfolio; map: RefObject<HTMLCanvasElement | null> }) {
   const phase = useUi(s => s.phase), cam = useUi(s => s.cam), rain = useUi(s => s.rain), rival = useUi(s => s.rival);
   const shown = useUi(s => s.shown), visited = useUi(s => s.visited), noGame = useUi(s => s.noGame);
+  const [opts, setOpts] = useState(false);   // race options drawer; only collapsible on touch and narrow screens (CSS)
   const st = data.stations;
   const hold = (k: Control) => {
     const off = () => { if (game.current) game.current.touch[k] = false; };
@@ -61,7 +62,7 @@ function Hud({ data, map }: { data: Portfolio; map: RefObject<HTMLCanvasElement 
         </div>
         <nav className="panel turns" aria-label="Turns">
           <span className="progress">Turns {visited.length} of {st.length}</span>
-          <span style={{ display: 'flex' }}>
+          <span className="pills">
             {st.map((x, i) => (
               <button key={i} type="button" className={'pill' + (visited.includes(i) ? ' done' : '') + (i === shown ? ' now' : '')}
                 aria-label={`Drive to turn ${x.turn}: ${x.title}`} aria-current={i === shown ? 'true' : undefined} onClick={() => game.current?.teleport(i)}>
@@ -69,28 +70,36 @@ function Hud({ data, map }: { data: Portfolio; map: RefObject<HTMLCanvasElement 
               </button>
             ))}
           </span>
-          <button className="skip" type="button" onClick={() => openList()}>Skip the race</button>
         </nav>
+        <div className="top-actions">
+          <button className="cam opts-toggle" type="button" aria-label="Race options" aria-expanded={opts} aria-controls="raceOpts" onClick={() => setOpts(o => !o)}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2" /><circle cx="10" cy="17" r="2" /></svg>
+          </button>
+          <button className="cam skip" type="button" onClick={() => openList()}>Skip the race</button>
+        </div>
       </header>
 
       <Banner stations={st} />
 
       <div className="bottom">
-        <div className="left-stack">
-          <Readouts />
+        <div className="readouts"><Readouts /></div>
+        <div className={'opts' + (opts ? ' open' : '')} id="raceOpts">
           <button className="cam" type="button" onClick={() => game.current?.toggleCam()}>View: {cam ? 'chase' : 'cockpit'}</button>
           <button className="cam" type="button" onClick={() => game.current?.toggleRain()}>Rain: {rain ? 'on' : 'off'}</button>
           <button className="cam" type="button" onClick={() => game.current?.toggleRival()}>Rival: {rival ? 'on' : 'off'}</button>
           <button className="cam" type="button" onClick={() => game.current?.restart()}>Restart</button>
-          <div className="panel hint"><kbd>W</kbd> gas &nbsp;<kbd>S</kbd> brake &nbsp;<kbd>A</kbd><kbd>D</kbd> steer &nbsp;<kbd>C</kbd> view &nbsp;<kbd>R</kbd> rain &nbsp;<kbd>O</kbd> rival &nbsp;<kbd>E</kbd> banner</div>
         </div>
-        <div className="touch">
+        <div className="panel hint"><kbd>W</kbd> gas &nbsp;<kbd>S</kbd> brake &nbsp;<kbd>A</kbd><kbd>D</kbd> steer &nbsp;<kbd>C</kbd> view &nbsp;<kbd>R</kbd> rain &nbsp;<kbd>O</kbd> rival &nbsp;<kbd>E</kbd> banner</div>
+        {/* Touch: steering under the left thumb, pedals under the right. */}
+        <div className="touch steer">
           <button className="tbtn" type="button" aria-label="Steer left" {...hold('left')}>{arrow('M14 4l-7 7 7 7')}</button>
           <button className="tbtn" type="button" aria-label="Steer right" {...hold('right')}>{arrow('M8 4l7 7-7 7')}</button>
+        </div>
+        <canvas className="panel" id="map" ref={map} role="img" aria-label="Track map. Select a turn to drive there." />
+        <div className="touch pedals">
           <button className="tbtn" type="button" {...hold('brake')}>Brake</button>
           <button className="tbtn gas" type="button" {...hold('gas')}>Gas</button>
         </div>
-        <canvas className="panel" id="map" ref={map} role="img" aria-label="Track map. Select a turn to drive there." />
       </div>
     </div>
   );

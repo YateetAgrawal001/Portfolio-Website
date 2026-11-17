@@ -59,6 +59,7 @@ function Intro() {
           <div><kbd>O</kbd> rival on or off</div>
           <div><kbd>E</kbd> hide or show the turn banner</div>
         </div>
+        <p className="keys-touch">Hold <b>Gas</b> to drive and <b>Brake</b> to slow down, and steer with the arrows on the left. Tap a turn number at the top to jump straight to it.</p>
         <p className="note">{ready && (night ? (rain ? 'Race conditions: night, rain, wet track.' : 'Race conditions: night, dry track.') : 'Race conditions: sunny day, dry track.')}</p>
         <p className="note">{reduceMotion
           ? 'Reduced motion is on, so rain starts off. The list view shows everything without the driving.'
